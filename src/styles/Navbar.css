@@ -1,0 +1,38 @@
+@import 'colors.css';
+@import "font-sizes.css";
+
+.navbar-body {
+  background-color: var(--primary-grey);
+  height: 65px;
+  display: flex;
+  justify-content: space-between;
+  position:fixed;
+  top:0;
+  width: 100vw  ;
+  z-index: 3;
+}
+.logo-container{
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  height: 100%;
+  flex-direction: column;
+}
+.gd-logo{
+  height: 55px;
+  margin-left: 10px;
+}
+.menu-items{
+  display: flex;
+  justify-content: space-between;
+  width: fit-content;
+  color: var(--primary-white);
+}
+.menu-items div{
+  width: 100px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-size: var(--medium-small);
+}

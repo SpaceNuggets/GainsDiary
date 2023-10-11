@@ -1,0 +1,72 @@
+@import 'colors.css';
+@import "font-sizes.css";
+
+@font-face {
+    font-family: 'BoldMontserrat';
+    src:local('BoldMontserrat'),
+        url(../fonts/Montserrat-Bold.ttf) ;
+}
+
+@font-face {
+    font-family: 'BoldPlayfairDisplay';
+    src:local('BoldPlayfairDisplay'),
+    url(../fonts/PlayfairDisplay-Bold.ttf) ;
+}
+
+@font-face {
+    font-family: 'BoldOpenSans';
+    src:local('BoldOpenSans'),
+    url(../fonts/OpenSans-Bold.ttf) ;
+}
+@font-face {
+    font-family: 'SemiBoldOpenSans';
+    src:local('SemiBoldOpenSans'),
+    url(../fonts/OpenSans-SemiBold.ttf) ;
+}
+@font-face {
+    font-family: 'OpenSans';
+    src:local('OpenSans'),
+    url(../fonts/OpenSans-Regular.ttf) ;
+}
+
+.hr-line{
+    width: 750px;
+    border:none;
+    background: #0498C9;
+    height: 2px;
+}
+.snd-button{
+    background-color: var(--primary-white);
+    border-radius: 15px;
+    color:var(--primary-black);
+    cursor: pointer;
+
+}
+.prm-button{
+    background-color: var(--primary-blue);
+    border-radius: 15px;
+    color:var(--primary-white);
+    cursor: pointer;
+}
+
+.divCenter{
+    display: flex;
+    justify-content: center;
+}
+.flexColumn{
+    flex-direction: column;
+}
+.boldSans{
+    font-family: BoldOpenSans,sans-serif;
+    font-weight: bold;
+}
+*{
+    font-family:OpenSans,sans-serif;
+}
+.dashboard-title{
+    font-size: 48px;
+    font-family: BoldPlayfairDisplay,sans-serif;
+    font-weight: bold;
+    text-align: center;
+    color:var(--primary-white);
+}

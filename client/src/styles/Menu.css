@@ -1,0 +1,44 @@
+@import 'colors.css';
+@import "font-sizes.css";
+
+.menu-body{
+    height: 100vh;
+    background-color: var(--primary-grey);
+    width:15%;
+    position: fixed;
+    top:65px;
+    right: 0;
+}
+.main-menu-item > div{
+    width:80%;
+    color:var(--primary-white);
+    border: 2px var(--primary-blue) solid;
+    border-radius: 15px;
+    font-size: 20px;
+
+    margin-left: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+.main-menu-item{
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.menu-items-container{
+    margin-top: 10px;
+}
+.close-sign{
+    color:var(--primary-white);
+    text-align: right;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.main-menu-item.checked{
+
+}
+.menu-item-space{
+    height: 10px;
+    background-color: var(--primary-grey);
+}

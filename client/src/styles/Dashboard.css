@@ -9,12 +9,7 @@
 
 }
 
-.next-section-info{
-    font-family: BoldMontserrat, serif;
-    font-size: 32px;
-    text-align: center;
-    margin-top: 15px;
-}
+
 .workout-card{
     background-color: var(--light-grey);
     border-radius: 15px;
@@ -48,15 +43,7 @@
     justify-content: space-evenly;
     margin-top: 30px;
 }
-.dashboard-button{
-    width:25%;
-    height: 80px;
-    font-family: BoldMontserrat, serif;
-    font-size: 32px;
-    text-align: center;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
+
 .workout-card-container > div{
     width: 60%;
     display: flex;

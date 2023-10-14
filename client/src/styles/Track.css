@@ -1,0 +1,54 @@
+
+.add-exercise-btn{
+    text-align: center;
+    width: 20%;
+}
+.react-datepicker__input-container input{
+    font-size: 20px;
+}
+.exercises-container{
+    border-radius: 15px;
+    background-color: var(--light-grey);
+    width: 80%;
+    padding:20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+.exercises-container-body{
+    height: 60%;
+}
+.add-exercise-container{
+    margin-top: 10px;
+}
+.bottom-exercises-container .dashboard-button{
+    height:60px;
+}
+.react-datepicker__input-container{
+    display: flex!important;
+    justify-content: center;
+}
+.react-datepicker__input-container > input{
+    border: 2px var(--secondary-blue) solid;
+    border-radius: 10px;
+    width: 50%;
+    text-align: center;
+}
+.exercise-container{
+    width: 30%;
+    margin-top: 20px;
+    padding-left:  10px;
+    border-radius: 15px;
+    color:var(--secondary-grey);
+    background-color: white;
+    border:1px var(--primary-blue) solid;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.remove-exe-btn{
+    width: 10%;
+    cursor: pointer;
+    color: black;
+}

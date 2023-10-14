@@ -1,15 +1,12 @@
 import '../styles/Navbar.css'
 import Logo from '../images/GDLogo.svg'
-import { useState } from 'react'
 
 const Navbar = ({setShowMenu, showMenu, loggedIn}) =>{
 
 
 
   const menuClick= () =>{
-    console.log(showMenu);
     setShowMenu(!showMenu);
-    console.log(showMenu);
   }
   return (
     <div className="navbar-body">

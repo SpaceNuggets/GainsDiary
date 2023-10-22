@@ -113,7 +113,9 @@
     background: linear-gradient(-45deg, var(--primary-black), var(--primary-grey), var(--secondary-blue), var(--primary-black) );
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
-    height: 100vh;
+    height: fit-content;
+    min-height: 100vh;
+    margin-top: 65px;
 }
 .flexSpaceEven{
     display: flex;

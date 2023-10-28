@@ -17,10 +17,16 @@
 
 }
 .exercises-container-body{
-    height: 60%;
+
+    min-height: 60%;
+    margin-bottom: 20px;
 }
 .add-exercise-container{
     margin-top: 10px;
+    margin-bottom: 20px;
+}
+.top-exercises-container{
+    height: 45%;
 }
 .bottom-exercises-container .dashboard-button{
     height:60px;
@@ -51,4 +57,25 @@
     width: 10%;
     cursor: pointer;
     color: black;
+}
+
+.remove-row-btn{
+    width: 60px;
+    text-align: center;
+    height: 28px;
+    line-height: 28px;
+}
+.exercises{
+    margin-top: 20px;
+}
+
+.ag-cell-value {
+    display: flex!important;
+    flex-direction: column!important;
+    justify-content: center!important;
+}
+.ag-root.ag-layout-auto-height::-webkit-scrollbar {
+    width: 1px;
+    color:red;
+    background-color: red;
 }

@@ -69,6 +69,7 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
     };
     setExercises([...exercises, acceptedExercise]);
     setShowExerciseModal(false);
+    console.log(acceptedExercise);
 
   }
 

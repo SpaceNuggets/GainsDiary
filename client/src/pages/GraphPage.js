@@ -167,17 +167,14 @@ const GraphPage = () => {
       }
     />
   ))
-  const aa=()=>{
-    setOption("sets")
-    console.log(option);
-  }
+
   return (
     <>
       <Navbar loggedIn={true} setShowMenu={setShowMenu} showMenu={showMenu}/>
       <div className="home-main-body graph-page">
         <div>
           <div className="main-panel divCenter flexColumn">
-            <div className="dashboard-title" onClick={aa}>
+            <div className="dashboard-title">
               Check your progress
             </div>
             <hr className="hr-line"/>

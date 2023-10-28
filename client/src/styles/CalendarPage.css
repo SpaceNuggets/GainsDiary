@@ -1,0 +1,26 @@
+@import 'colors.css';
+@import "font-sizes.css";
+
+.calendar-main{
+    background-color: var(--primary-black);
+    /*margin-top: 60px;*/
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+.calendar-container{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10px;
+}
+.rbc-calendar{
+    background-color: var(--primary-white);
+    padding: 10px;
+    border-radius: 15px;
+}
+.rbc-toolbar-label{
+    font-family: BoldMontserrat, serif;
+    font-size: 26px;
+}

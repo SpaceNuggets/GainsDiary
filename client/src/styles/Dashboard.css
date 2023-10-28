@@ -1,0 +1,61 @@
+@import 'colors.css';
+@import "font-sizes.css";
+
+.dashboard-main-section{
+    background-color: black;
+    width: 100vw;
+    height: 100vh;
+    color:var(--primary-white)
+
+}
+
+
+.workout-card{
+    background-color: var(--light-grey);
+    border-radius: 15px;
+    color:var(--primary-black);
+    text-align: center;
+    width: 30%;
+    overflow: hidden;
+
+}
+.workout-day{
+    font-family: BoldMontserrat, serif;
+    font-size: 32px;
+}
+
+.workout-card-title{
+    font-family: BoldMontserrat, serif;
+    font-size: 24px;
+}
+.workout-card li{
+    font-size: 20px;
+    text-align: left;
+}
+.workout-card-btn{
+    width: 75%;
+    font-size: 20px;
+    height: 30px;
+    margin-bottom: 20px;
+}
+.workout-card-container{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 30px;
+}
+
+.workout-card-container > div{
+    width: 60%;
+    display: flex;
+    justify-content: space-evenly;
+
+}
+.workout-card.empty-card{
+    width:40%;
+    font-size: 20px;
+    height: 200px;
+}
+.empty-card .workout-card-title{
+    font-size: 22px;
+    margin-top: 10px;
+}

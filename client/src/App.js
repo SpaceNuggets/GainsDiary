@@ -6,6 +6,7 @@ import {useCookies} from "react-cookie";
 import { ToastContainer } from 'react-toastify'
 import CalendarPage from './pages/CalendarPage'
 import GraphPage from './pages/GraphPage'
+import Timer from './pages/Timer'
 const token=sessionStorage.getItem("AuthToken")
 
 const App = () =>{
@@ -21,6 +22,7 @@ const App = () =>{
         <Route path="/calendar" element={<CalendarPage/>}/>
         <Route path="/track" element={<Track/>}/>
         <Route path="/graph" element={<GraphPage/>}/>
+        <Route path="/timer" element={<Timer/>}/>
       </Routes>
 
     </BrowserRouter>

@@ -6,25 +6,25 @@ const express = require('express')
 const cors = require('cors')
 const {MongoClient} = require('mongodb');
 const authRoutes = require('./routes/authRoutes');
+const workoutRoutes = require('./routes/workoutRoutes');
+const exercisesRoutes = require('./routes/exercisesRoutes');
+const passport = require('passport')
+const passportConfig = require('./config/passportConfig');
 
 
 
-//const uri=  ''
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.get('/',(req,res)=>{
-  res.json("AA")
-})
+app.use(passport.initialize())
 
-// app.post('/signup',(req,res)=>{
-//
-// })
+
 
 app.get('/users',async (req,res)=>{
   const client = new MongoClient(uri);
   try{
     await client.connect()
+
     const database=  client.db('app-data');
     const usersCollection = database.collection('users');
     const users=await usersCollection.find().toArray();
@@ -35,5 +35,10 @@ app.get('/users',async (req,res)=>{
   }
 })
 
+
+
+
 app.use(authRoutes);
+app.use(workoutRoutes)
+app.use(exercisesRoutes)
 app.listen(PORT, ()=>console.log("Server running"));

@@ -39,6 +39,20 @@ async function signup(req, res) {
   }
 }
 
+function login(req, res, next) {
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid login or password.' });
+    }
+    const authToken = jwt.sign(user, user.login, { expiresIn: 60 * 24 });
+
+    res.status(201).json({ authToken, userID: user.user_id });
+  })(req, res, next);
+}
 module.exports = {
-  signup
+  signup,
+  login
 };

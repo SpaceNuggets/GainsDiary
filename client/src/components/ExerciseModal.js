@@ -2,8 +2,12 @@ import '../styles/ExerciseModal.css'
 import Select from 'react-select/creatable'
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { useCookies } from 'react-cookie'
 
-const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedExercise}) =>{
+
+const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedExercise, setClickedExercise}) =>{
 
 
   //currently selected select option
@@ -17,11 +21,12 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
   ];
 
   //To get attributes from
-  const exercisesOptions = [
-    { name:"legs-presses", attributeKeys:["reps","sets","weight","break-time"] },
-    {name:"squats", attributeKeys:["reps","sets","weight","water"], attributeValues:[1,2,3,4] },
-    {name:"calf-raises", attributeKeys:["reps","sets","weight","break-time","water"], attributeValues: [null,null,null,null,null] }
-  ]
+  const [exercisesOptions, setExerciseOptions] =useState( [
+    { name:"legs-presses", value: "legs-presses", label: 'Legs Presses', attributeKeys:["reps","sets","weight","break-time"] },
+    {name:"squats",  value: 'squats', label: 'Squats', attributeKeys:["reps","sets","weight","water"], attributeValues:[1,2,3,4] },
+    {name:"calf-raises", value: 'calf-raises', label: 'calf raises', attributeKeys:["reps","sets","weight","break-time","water"], attributeValues: [null,null,null,null,null] }
+  ]);
+  const defaultKeys={attributeKeys: ["reps","sets","weight","rest"]};
   const [customAttributes, setCustomAttributes] = useState([]);
   const [clickCount, setClickCount] = useState(0);
   const removeInputs = (target) => {
@@ -30,11 +35,14 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
 
   };
   let acceptedExercise={};
-  const acceptClick = () =>{
+
+  const generateExercise = ()=>{
     //Set name of exercise
     acceptedExercise={
-      ...acceptedExercise,
-      name:activeOption
+      // ...acceptedExercise,
+      label:formatString(activeOption),
+      value:activeOption,
+      name:formatString(activeOption)
     };
     acceptedExercise={
       ...acceptedExercise,
@@ -62,16 +70,37 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
       attributeKeys.push(key);
       attributeValues.push(customAttValues[index].value);
     });
-   acceptedExercise = {
-     ...acceptedExercise,
+    acceptedExercise = {
+      ...acceptedExercise,
       attributeKeys,
       attributeValues
     };
-    setExercises([...exercises, acceptedExercise]);
-    setShowExerciseModal(false);
-    console.log(acceptedExercise);
-
+    console.log("gen",acceptedExercise)
+    return acceptedExercise;
   }
+  const acceptClick = () => {
+    if (exercises) {
+
+      const index = exercises?.findIndex(obj => obj.id === clickedExercise);
+      if (index === -1) {
+        setExercises([...exercises, generateExercise()]);
+      } else {
+        const newArray = [...exercises];
+        newArray[index] = generateExercise();
+        console.log("new", newArray);
+        setExercises(newArray);
+
+      }
+
+
+    }
+    else{
+      setExercises([generateExercise()]);
+    }
+    setClickedExercise();
+    setShowExerciseModal(false);
+  }
+
 
   const addInput = () =>{
     if (clickCount < 10) {
@@ -91,10 +120,11 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
     }
   }
   const getExerciseByName = (exerciseName)=>{
-    return exercisesOptions.filter((exercise) => exercise.name === exerciseName);
+    return exercisesOptions.filter((exercise) => exercise.label === exerciseName);
   }
 
   const getExerciseByID = (exerciseID)=>{
+    console.log(exercises.filter((exercise) => exercise.id === exerciseID)[0])
     return exercises.filter((exercise) => exercise.id === exerciseID)[0];
   }
   function formatString(inputString) {
@@ -106,12 +136,73 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
   const checkSelection = (e)=>{
     setActiveOption(e.value);
   }
+  const [cookies] = useCookies()
+  const userID = cookies.UserID
+  const getExercisesOptions = async () => {
+    try {
+
+      const promise = await axios.get('http://localhost:8000/exercises-by-user', {
+        params:{userID:userID}
+      })
+      console.log(promise.data)
+      setExerciseOptions(promise.data);
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
+  const createExercise = async () => {
+    const acceptedExercise=generateExercise();
+    const data={
+      value:activeOption,
+      label:formatString(activeOption),
+      user_id:userID,
+      exercise_id:acceptedExercise.id,
+      attributeKeys:acceptedExercise.attributeKeys
+    }
+    if(exercisesOptions.some(item=>item.value===activeOption)){
+
+      //if exercise exist, update it
+      try {
+        const promise = await axios.put('http://localhost:8000/update-exercise', {
+          params: { exerciseData: data }
+        })
+
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response.data.error)
+      }
+    }
+    else {
+      //else create new one
+      try {
+        const promise = await axios.put('http://localhost:8000/create-exercise', {
+          params: { exerciseData: data }
+        })
+
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response.data.error)
+      }
+    }
+
+
+
+  }
+
 
   useEffect(() => {
    if(clickedExercise!==null){
      setActiveOption( getExerciseByID( clickedExercise).name);
    }
+    console.log("AA",activeOption)
+
   }, [clickedExercise]);
+
+  useEffect(()=>{
+    getExercisesOptions()
+  },[])
 
   return (
     <div className="exe-modal-body">
@@ -121,7 +212,7 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
             <div className="exe-close-sign" onClick={()=> setShowExerciseModal(false)}>X</div>
             <div className="divCenter">
               <div className="select-name-container divCenter">
-                <Select options={options}
+                <Select options={exercisesOptions}
                         onChange={(e)=>checkSelection(e)}
                         placeholder="Name of the exercise"
                         defaultValue={(clickedExercise && options.filter(option =>
@@ -131,7 +222,7 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
               </div>
 
               <div className="btn-container">
-                <div className="prm-btn2">+</div>
+                <div className="prm-btn2" onClick={createExercise}>+</div>
               </div>
 
             </div>
@@ -139,6 +230,9 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
               {activeOption && (clickedExercise
                   ? getExerciseByID(clickedExercise)
                   : getExerciseByName(activeOption)[0]
+                    ? getExerciseByName(activeOption)[0]
+                    : defaultKeys
+
               ).attributeKeys.map((d,index) =>
                 (<div className="divCenter org-att-container" value={d}>
                   <input
@@ -150,6 +244,7 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
                       ? getExerciseByID( clickedExercise).attributeValues[index]
                       : ""
                     }/>
+                  <div className="divCenter flexColumn att-remove-btn"  onClick={(e)=>{removeInputs(e.target)}}>X</div>
 
                 </div>)
               )}

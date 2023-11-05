@@ -12,64 +12,28 @@ import {AgGridReact} from 'ag-grid-react'
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import RemoveRowButton from '../components/RemoveRowButton'
+import { useLocation } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 const Track = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const [workout,setWorkout]=useState();
   const [workoutDate, setWorkoutDate] = useState(new Date());
   const [workoutName, setWorkoutName] =useState();
   const [showExerciseModal,setShowExerciseModal]=useState(false)
-  const [clickedExercise, setClickedExercise]=useState(null);
-  const [exercises, setExercises]=useState([
-    {name:"Squats",
-      id:1,
-      attributeKeys:["reps","water","sets","aa"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"Push ups",
-      id:2,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"Push ups",
-      id:3,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"Push ups",
-      id:4,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"Push ups",
-      id:5,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"Push ups",
-      id:5,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"Push ups",
-      id:5,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },
-    {name:"sss",
-      id:5,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    },{name:"Push ups",
-      id:5,
-      attributeKeys:["reps","water","sets","distance"],
-      attributeValues:["20","200","2","1"]
-    }
 
-  ]);
+  const [clickedExercise, setClickedExercise]=useState(null);
+  const [exercises, setExercises]=useState([]);
   const options = [
-    { value: 'BeastBiceps', label: 'Beast Biceps' },
+
     { value: 'ThiccThigs', label: 'Thicc Thigs' },
+    { value: '1', label: 'Beast Biceps' },
     { value: 'Cardio', label: 'Cardio' }
   ];
+  const [defaultOption,setDefaultOption]=useState(options[0]);
+
+  const {state} = useLocation();
   const removeExerciseById = (id) => {
     // Filter the exercises array to remove the exercise with the given id
     const updatedExercises = exercises.filter(exercise => exercise.id !== id);
@@ -84,12 +48,12 @@ const Track = () => {
   const [rowData, setRowData]=useState();
 
   const [columnDef, setColumDef]=useState([
-    [...new Set(exercises.flatMap(obj => obj.attributeKeys))].map(key => ({ field: key }))
+    [...new Set(exercises?.flatMap(obj => obj.attributeKeys))].map(key => ({ field: key }))
   ]);
 
   const updateGrid = () =>{
     // Extract unique attributeKeys
-    const uniqueAttributeKeys = [...new Set(exercises.flatMap(obj => obj.attributeKeys))];
+    const uniqueAttributeKeys = [...new Set(exercises?.flatMap(obj => obj.attributeKeys))];
 
     // Create columnDef array
     const columnDefTemp = uniqueAttributeKeys.map(key => ({ field: key, width:100 }));
@@ -101,6 +65,20 @@ const Track = () => {
     columnDefTemp[0].rowDrag = true;
     columnDefTemp.push({
       headerName: "",
+      id:2,
+      width: 100,
+      cellRenderer: UpdateRowButton,
+      cellRendererParams: {
+        onUpdateClick: (row) => {
+          // Handle the row deletion here
+          // For example, you can remove the row from your data source.
+          console.log("Delete button clicked for row:", row);
+          modifyExercise(row);
+        },
+      },
+    });
+    columnDefTemp.push({
+      headerName: "",
       id:1,
       width: 100,
       cellRenderer: RemoveRowButton,
@@ -108,16 +86,17 @@ const Track = () => {
         onDeleteClick: (row) => {
           // Handle the row deletion here
           // For example, you can remove the row from your data source.
-          console.log("Delete button clicked for row:", row.id);
+          console.log("Delete button clicked for row:", row);
           removeExerciseById(row.id);
         },
       },
     });
+
     setColumDef(columnDefTemp);
 
     // setColumDef([...new Set(exercises.flatMap(obj => obj.attributeKeys))].map(key => ({ field: key, rowDrag:true })));
-    const newJsonArray = exercises.map((item) => {
-      const newObj = { name: item.name, id:item.id };
+    const newJsonArray = exercises?.map((item) => {
+      const newObj = { name: item.label, id:item.id };
       for (let i = 0; i < item.attributeKeys.length; i++) {
         newObj[item.attributeKeys[i]] = item.attributeValues[i];
       }
@@ -129,9 +108,10 @@ const Track = () => {
 
   //when clicking exercise button
   const modifyExercise = (e) =>{
-    setClickedExercise(e.target.getAttribute("value"));
-    console.log(columnDef)
-    setShowExerciseModal(true);
+    const value=exercises.find(item=>item.id===e.id).id;
+    console.log(value);
+     setClickedExercise(value);
+     setShowExerciseModal(true);
   }
   const removeExercise = (Event,ID) => {
     Event.stopPropagation();
@@ -140,16 +120,55 @@ const Track = () => {
     });
   };
 
-  const acceptClick = ()=>{
-    const workout={
-      exercises:exercises,
-      date:workoutDate,
-      name:workoutName,
-      id:uuidv4()
+  const acceptClick = async ()=>{
 
-    };
+
+    if(state){
+      const workoutData={
+        exercises:exercises,
+        date:new Date(workoutDate),
+        name:workoutName,
+        workout_id:state.workout.workout_id,
+        user_id:userID
+
+      };
+      console.log("updatr logic")
+      //if workout exist, update it
+      try {
+        const promise = await axios.put('http://localhost:8000/update-workout', {
+          params: { workoutData: workoutData }
+        })
+
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response.data.error)
+      }
+    }
+    else {
+      //else create new one
+      const workoutData={
+        exercises:exercises,
+        date:new Date(workoutDate),
+        name:workoutName,
+        workout_id:uuidv4(),
+        user_id:userID
+
+      };
+      try {
+        const promise = await axios.put('http://localhost:8000/create-workout', {
+          params: { workoutData: workoutData }
+        })
+
+      } catch (error) {
+        console.log(error)
+        toast.error(error.response.data.error)
+      }
+    }
+
     console.log(workout);
   }
+  const [cookies] = useCookies()
+  const userID = cookies.UserID
   const RemoveRowButton = (props) => {
     const { onDeleteClick, data } = props;
 
@@ -160,13 +179,25 @@ const Track = () => {
     return <div className="prm-button remove-row-btn" onClick={handleDeleteClick}>Delete</div>;
   };
 
+  const UpdateRowButton = (props) => {
+    const { onUpdateClick, data } = props;
+
+    const handleUpdateClick = () => {
+      onUpdateClick(data);
+    };
+
+    return <div className="prm-button remove-row-btn" onClick={handleUpdateClick}>Update</div>;
+  };
+
+
   const saveClick = ()=>{
     //TODO: change to actually save
     const workout={
       exercises:exercises,
       date:workoutDate,
       name:workoutName,
-      id:uuidv4()
+      workout_id:uuidv4(),
+      user_id:userID
 
     };
     console.log(workout);
@@ -176,11 +207,32 @@ const Track = () => {
     updateGrid();
 
   }, [exercises])
+
+  useEffect(() => {
+
+    // const {workout}=state;
+
+    setExercises(state?.workout.exercises)
+    if(state?.workout.name){
+      setWorkoutName(state.workout.name)
+      setDefaultOption(options.find(obj=>obj.value===state.workout.workout_id))
+      setWorkoutDate(new Date(state.workout.date))
+    }
+
+    console.log(options)
+
+  }, [])
   return (
     <>
       <Navbar loggedIn={true} setShowMenu={setShowMenu} showMenu={showMenu}/>
       <div className="home-main-body">
-        {showExerciseModal&& <ExerciseModal setShowExerciseModal={setShowExerciseModal} setExercises={setExercises} exercises={exercises} clickedExercise={clickedExercise}/> }
+        {showExerciseModal&& <ExerciseModal
+          setShowExerciseModal={setShowExerciseModal}
+          setExercises={setExercises}
+          exercises={exercises}
+          clickedExercise={clickedExercise}
+          setClickedExercise={setClickedExercise}
+        /> }
         <div className="main-panel">
           <div>
           <div className="dashboard-title">
@@ -188,14 +240,16 @@ const Track = () => {
           </div>
           <hr className="hr-line"/>
           <div className="next-section-info">
+
             Track it here:
           </div>
             <div className="divCenter exercises-container-body">
           <div className="exercises-container">
             <div className="top-exercises-container">
               <div className="select-name-container divCenter">
-                <Creatable options={options} placeholder="Name of the workout"
+                <Creatable key={workoutName} options={options} placeholder="Name of the workout"
                            formatCreateLabel={(e) => {return 'Add ' + e + ' workout'}}
+                           defaultValue={defaultOption}
                            onChange={(e)=>setWorkoutName(e.value)}
                 />
               </div>

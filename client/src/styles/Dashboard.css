@@ -59,3 +59,14 @@
     font-size: 22px;
     margin-top: 10px;
 }
+.workout-card li{
+    width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    list-style-position: inside;
+}
+.workout-card ul{
+    width: 100%;
+    padding-left: 10px;
+}

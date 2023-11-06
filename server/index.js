@@ -8,6 +8,7 @@ const {MongoClient} = require('mongodb');
 const authRoutes = require('./routes/authRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
 const exercisesRoutes = require('./routes/exercisesRoutes');
+const exeDatabaseRoutes = require('./routes/exeDatabaseRoutes')
 const passport = require('passport')
 const passportConfig = require('./config/passportConfig');
 
@@ -41,4 +42,5 @@ app.get('/users',async (req,res)=>{
 app.use(authRoutes);
 app.use(workoutRoutes)
 app.use(exercisesRoutes)
+app.use(exeDatabaseRoutes)
 app.listen(PORT, ()=>console.log("Server running"));

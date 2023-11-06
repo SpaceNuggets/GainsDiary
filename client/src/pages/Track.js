@@ -16,12 +16,14 @@ import { useLocation } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import AutogenerateModal from '../components/AutogenerateModal'
 const Track = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [workout,setWorkout]=useState();
   const [workoutDate, setWorkoutDate] = useState(new Date());
   const [workoutName, setWorkoutName] =useState();
   const [showExerciseModal,setShowExerciseModal]=useState(false)
+  const [showAutogenerateModal,setShowAutogenerateModal]=useState();
 
   const [clickedExercise, setClickedExercise]=useState(null);
   const [exercises, setExercises]=useState([]);
@@ -44,6 +46,10 @@ const Track = () => {
   const addExerciseClick = ()=>{
     setClickedExercise(null);
     setShowExerciseModal(true)
+  }
+  const autogenerateClick = async ()=>{
+    setShowAutogenerateModal(true);
+
   }
   const [rowData, setRowData]=useState();
 
@@ -233,6 +239,11 @@ const Track = () => {
           clickedExercise={clickedExercise}
           setClickedExercise={setClickedExercise}
         /> }
+        {
+          showAutogenerateModal &&
+          <AutogenerateModal setShowModal={setShowAutogenerateModal}
+                             setExercises={setExercises}/>
+        }
         <div className="main-panel">
           <div>
           <div className="dashboard-title">
@@ -285,6 +296,11 @@ const Track = () => {
                 <div className="dashboard-button prm-button" onClick={saveClick}>
                   <div className="divCenter flexColumn">Save</div>
                 </div>
+              </div>
+              <div className="divCenter">
+              <div className="teri-btn divCenter" onClick={autogenerateClick}>
+                <div className="divCenter flexColumn">Generate workout</div>
+              </div>
               </div>
             </div>
           </div>

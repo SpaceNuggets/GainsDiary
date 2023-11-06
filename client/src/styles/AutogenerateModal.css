@@ -1,0 +1,8 @@
+@import 'colors.css';
+@import "font-sizes.css";
+
+.force, .advancement-level, .goal{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}

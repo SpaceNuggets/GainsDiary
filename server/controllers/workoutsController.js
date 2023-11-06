@@ -12,7 +12,7 @@ const workoutsByDate = async (req, res, next) => {
   const toDate=req.query.toDate;
   const fromDate=req.query.fromDate;
   const userID=req.query.userID;
-  console.log(new Date(fromDate));
+
 
   try {
     await client.connect()

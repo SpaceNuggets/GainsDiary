@@ -202,6 +202,7 @@ const ExerciseModal = ({setShowExerciseModal, setExercises, exercises, clickedEx
 
   useEffect(()=>{
     getExercisesOptions()
+    console.log(clickedExercise);
   },[])
 
   return (

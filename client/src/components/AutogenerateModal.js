@@ -189,7 +189,7 @@ const AutogenerateModal = ({ setShowModal, setExercises }) => {
         }
       })
 
-)
+
       setExercises(formatWorkout(promise.data));
       setShowModal(false)
 

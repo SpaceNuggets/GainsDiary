@@ -5,11 +5,16 @@ import { Chart } from 'react-charts'
 import { type } from '@testing-library/user-event/dist/type'
 import { AxisOptions } from 'react-charts'
 import Select from 'react-select'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { useCookies } from 'react-cookie'
 
 const GraphPage = () => {
   const [option, setOption] = useState('weight')
   const [displayGraph, setDisplayGraph]=useState(false);
   const [year, setYear]=useState();
+  const [cookies] = useCookies()
+  const userID = cookies.UserID
   const [month, setMonth]=useState();
   type Exercise = {
     date: Date,
@@ -28,8 +33,81 @@ const GraphPage = () => {
       data:[]
     }
   ]);
-  const getGraphData = ()=>{
+  const getGraphData = async()=>{
     //TODO: Change to get data from api
+
+    try {
+
+      const promise = await axios.get('http://localhost:8000/workouts-exercises-data', {
+        params:{
+          userID:userID,
+          exerciseName:chosenExercise,
+          year:year,
+          month:month
+        }
+      })
+      console.log(promise.data)
+      if(promise.data.length!==0) {
+        const convertedData = []
+
+        promise.data.forEach((item) => {
+          const date = new Date(item.date);
+          console.log("item", item)
+          const attributes = item.exercise.attributeKeys;
+          const values = item.exercise.attributeValues;
+
+          const dataItem = {
+            date,
+          };
+
+          for (let i = 0; i < attributes.length; i++) {
+            if (!isNaN(parseFloat(values[i]))) {
+              dataItem[attributes[i]] = parseFloat(values[i]);
+            } else {
+              dataItem[attributes[i]] = values[i];
+            }
+          }
+
+          convertedData.push(dataItem);
+        })
+        console.log(convertedData)
+        const newData = {
+          label: chosenExercise,
+          data: convertedData
+        }
+        setData([newData])
+        console.log("new data", newData)
+        const uniqueKeys = new Set();
+        for (const obj of [newData]) {
+          console.log("obj",obj)
+          if (obj.data && Array.isArray(obj.data)) {
+            // Loop through the data array
+            for (const dataItem of obj.data) {
+              // Extract keys (excluding 'date')
+
+              Object.keys(dataItem).forEach(key => {
+                if (key !== 'date') {
+                  uniqueKeys.add(key);
+                }
+              });
+            }
+          }
+        }
+        const attributes = Array.from(uniqueKeys).map(key => {
+          return { value: key, label: key.charAt(0).toUpperCase() + key.slice(1) };
+        });
+        setAttributeOptions(attributes);
+      }else{
+        toast.info("No workouts found for this criteria")
+        console.log("AA");
+      }
+
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+
+
     const dataReceived=[
       {
         label: 'Squats - '+option,
@@ -37,7 +115,7 @@ const GraphPage = () => {
           {
             date: new Date('December 10, 1995'),
 
-            weight: 20,
+            weight: 60,
             reps: 30,
             sets:100
           },
@@ -56,42 +134,15 @@ const GraphPage = () => {
           // ...
         ]
       }]
-    setData(dataReceived);
-    const uniqueKeys = new Set();
-    for (const obj of dataReceived) {
-      if (obj.data && Array.isArray(obj.data)) {
-        // Loop through the data array
-        for (const dataItem of obj.data) {
-          // Extract keys (excluding 'date')
+    // setData (dataReceived);
 
-          Object.keys(dataItem).forEach(key => {
-            if (key !== 'date') {
-              uniqueKeys.add(key);
-            }
-          });
-        }
-      }
-    }
-    const attributes = Array.from(uniqueKeys).map(key => {
-      return { value: key, label: key.charAt(0).toUpperCase() + key.slice(1) };
-    });
-    setAttributeOptions(attributes);
-    console.log(attributes  );
+    // console.log(attributes  );
 
 
   }
 
-  const exerciseOptions = [
-    { value: 'squats', label: 'Squats' },
-    { value: 'push-up', label: 'Push ups' },
-    { value: 'running', label: 'Running' }
-  ]
-  const yearOptions= [
-    {value:"0",label:"All years"},
-    {value:"2023",label:"2023"},
-    {value: "2022",label: "2022"},
-    {value:"2021",label: "2021"}
-  ]
+  const [exerciseOptions,setExerciseOptions] =useState( [])
+  const [yearOptions,setYearOptions]= useState([])
   const monthOptions=[
     { "value": 0,"label":"All months"},
     { "value": 1, "label": "January" },
@@ -126,6 +177,7 @@ const GraphPage = () => {
     [option]
   )
   const rerenderGraph = () => {
+    console.log("data",data);
     if(data[0].data.length!==0 ) {
       setGraph((
         <Chart
@@ -167,6 +219,34 @@ const GraphPage = () => {
       }
     />
   ))
+
+  const getInitialData= async()=>{
+    try {
+
+      const promise = await axios.get('http://localhost:8000/workouts-unique-data', {
+        params:{userID:userID}
+      })
+      console.log(promise.data)
+      let newExercisesOptions=[]
+      let newYearOptions=[{value:0,label:"All years"}]
+      promise.data.exercises.forEach((item)=>{
+        newExercisesOptions.push({value:item,label:item})
+
+      })
+      promise.data.years.forEach((item)=>{
+        newYearOptions.push({value:item._id,label:item._id})
+      })
+      setExerciseOptions(newExercisesOptions)
+      setYearOptions(newYearOptions)
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
+  useEffect(()=>{
+    getInitialData();
+  },[])
 
   return (
     <>
@@ -210,7 +290,7 @@ const GraphPage = () => {
               />}
               </div>
               <div className="select-name-container divCenter">
-                {year &&
+                {year>=0 &&
                   <div className="prm-button" onClick={getGraphData}>Accept</div>
                 }
               </div>

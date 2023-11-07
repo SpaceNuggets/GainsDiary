@@ -73,7 +73,7 @@ const exercisesByOptions = async (req,res,next)=>{
       { $unwind: "$exercises" },
       { $match: { "exercises.label": { $in: exercisesNameArray } } },
       { $match: { "user_id": userID } },
-      { $sort: { "exercises.date": -1 } },
+      { $sort: { "date": -1 } },
       { $limit: 10 },
       { $project: { _id: 0, exercise: "$exercises" } }
     ]).toArray();
